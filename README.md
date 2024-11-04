@@ -17,3 +17,7 @@ transition effects,to display a collection of images.
 1. HTML for structure
 2. CSS for styling and responsive design
 3. JavaScript for functionality and controls
+# installation
+git clone https://github.com/Dikshasingh124/image-slider.git
+cd image-slider
+
