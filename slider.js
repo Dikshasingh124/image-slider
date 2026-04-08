@@ -2,61 +2,82 @@ let slideImages = document.querySelectorAll('.slides img');
 let nextButton = document.querySelector('.next');
 let prevButton = document.querySelector('.prev');
 let dots = document.querySelectorAll('.dot');
+
 let counter = 0;
 let interval;
+let slideIntervalTime = 3000;
 
-// Function to switch to the next slide
+// Show slide
+function showSlide(index) {
+  slideImages[counter].classList.remove('active');
+  dots[counter].classList.remove('active');
+
+  counter = index;
+
+  slideImages[counter].classList.add('active');
+  dots[counter].classList.add('active');
+}
+
+// Next
 function slideNext() {
-  slideImages[counter].classList.remove('active');
-  dots[counter].classList.remove('active');
-  
-  counter = (counter + 1) % slideImages.length;
-  
-  slideImages[counter].classList.add('active');
-  dots[counter].classList.add('active');
+  let nextIndex = (counter + 1) % slideImages.length;
+  showSlide(nextIndex);
 }
 
-// Function to switch to the previous slide
+// Previous
 function slidePrev() {
-  slideImages[counter].classList.remove('active');
-  dots[counter].classList.remove('active');
-  
-  counter = (counter - 1 + slideImages.length) % slideImages.length;
-  
-  slideImages[counter].classList.add('active');
-  dots[counter].classList.add('active');
+  let prevIndex = (counter - 1 + slideImages.length) % slideImages.length;
+  showSlide(prevIndex);
 }
 
-// Set up auto sliding
-function autoSliding() {
-  interval = setInterval(slideNext, 2000);
+// Auto slide
+function startAutoSlide() {
+  stopAutoSlide();
+  interval = setInterval(slideNext, slideIntervalTime);
 }
 
-// Stop auto sliding on hover
-document.querySelector('.slide-container').addEventListener('mouseover', () => {
+// Stop auto
+function stopAutoSlide() {
   clearInterval(interval);
+}
+
+// Dot click
+dots.forEach(dot => {
+  dot.addEventListener('click', function () {
+    let index = parseInt(this.getAttribute('data-index'));
+    showSlide(index);
+    startAutoSlide();
+  });
 });
 
-// Resume auto sliding when not hovering
-document.querySelector('.slide-container').addEventListener('mouseout', autoSliding);
+// Buttons
+nextButton.addEventListener('click', () => {
+  slideNext();
+  startAutoSlide();
+});
 
-// Function to switch slides when clicking a dot
-function switchImage(currentDot) {
-  let imageIndex = parseInt(currentDot.getAttribute('data-index'));
-  
-  slideImages[counter].classList.remove('active');
-  dots[counter].classList.remove('active');
-  
-  counter = imageIndex;
-  
-  slideImages[counter].classList.add('active');
-  dots[counter].classList.add('active');
-}
+prevButton.addEventListener('click', () => {
+  slidePrev();
+  startAutoSlide();
+});
 
-// Add event listeners
-nextButton.addEventListener('click', slideNext);
-prevButton.addEventListener('click', slidePrev);
-dots.forEach(dot => dot.addEventListener('click', function() { switchImage(dot); }));
+// Hover pause
+let container = document.querySelector('.slide-container');
 
-// Start auto sliding on page load
-autoSliding();
+container.addEventListener('mouseenter', stopAutoSlide);
+container.addEventListener('mouseleave', startAutoSlide);
+
+// Keyboard control
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') {
+    slideNext();
+    startAutoSlide();
+  }
+  if (e.key === 'ArrowLeft') {
+    slidePrev();
+    startAutoSlide();
+  }
+});
+
+// Start
+startAutoSlide();
